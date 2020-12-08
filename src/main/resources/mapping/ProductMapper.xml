@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.dao.ProductMapper">
+
+    <select id="findProducts" resultType="product" parameterType="product">
+        select * from t_product
+        <where>
+            <if test="productName!=null and productName!=''">
+                product_name like '%${productName}%'
+            </if>
+        </where>
+    </select>
+
+    <insert id="addProduct" parameterType="product" useGeneratedKeys="true" keyProperty="productId" keyColumn="product_id">
+        insert into t_product (`product_name`,`product_unit`,`product_num`) values (#{productName},#{productUnit},#{productNum});
+    </insert>
+
+    <select id="getProductById" resultType="product" parameterType="product">
+        select * from t_product where product_id = #{productId}
+    </select>
+
+    <update id="updateProduct">
+        update t_product
+        <set>
+            <if test="productName!=null and productName!=''">
+                product_name = #{productName} ,
+            </if>
+            <if test="productUnit!=null and productUnit!=''">
+                product_unit = #{productUnit} ,
+            </if>
+            <if test="productNum!=null">
+                product_num = #{productNum} ,
+            </if>
+        </set>
+        where product_id = #{productId}
+    </update>
+
+    <delete id="delProduct" parameterType="product">
+        delete from t_product where product_id = #{productId}
+    </delete>
+
+</mapper>

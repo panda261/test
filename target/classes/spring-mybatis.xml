@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+    <!--  读取配置文件  -->
+    <context:property-placeholder location="classpath:db.properties" />
+
+    <!--  配置数据源  -->
+    <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="driverClassName" value="${jdbc.driver}" />
+        <property name="url" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+
+<!--        &lt;!&ndash;    druid数据源相关配置    &ndash;&gt;-->
+<!--        <property name="initialSize" value="0" />-->
+<!--        <property name="maxActive" value="20" />-->
+<!--        <property name="minIdle" value="0" />-->
+<!--        <property name="maxWait" value="10000" />-->
+
+<!--        <property name="testOnBorrow" value="false" />-->
+<!--        <property name="testOnReturn" value="false" />-->
+<!--        <property name="testWhileIdle" value="true" />-->
+
+<!--        <property name="timeBetweenEvictionRunsMillis" value="10000" />-->
+<!--        <property name="minEvictableIdleTimeMillis" value="25200000" />-->
+<!--        <property name="removeAbandoned" value="true" />-->
+<!--        <property name="removeAbandonedTimeout" value="1800" />-->
+<!--        <property name="logAbandoned" value="true" />-->
+<!--        <property name="filters" value="mergeStat" />-->
+
+    </bean>
+
+    <!--  mybaits配置  -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="mapperLocations" value="classpath:mapping/*.xml" />
+        <property name="configLocation" value="classpath:mybatis-config.xml" />
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.dao" />
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
+    </bean>
+
+    <!--  配置事务管理器  -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+
+    <!--  注解方式的事务启动  -->
+    <tx:annotation-driven transaction-manager="transactionManager" />
+
+</beans>
